@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/BurntSushi/toml"
 	tus "github.com/eventials/go-tus"
@@ -22,9 +24,11 @@ func main() {
 
 	var cc CloudflareConfig
 	var configFilename, videoFile string
+	var videoID int
 
 	flag.StringVar(&configFilename, "config", "./config.toml", "path for config file")
 	flag.StringVar(&videoFile, "video", "./videofile.mp4", "path for video file")
+	flag.IntVar(&videoID, "id", 0, "ivm video id for metadata store")
 	flag.Parse()
 
 	if _, err := toml.DecodeFile(configFilename, &cc); err != nil {
@@ -40,12 +44,27 @@ func main() {
 
 	defer f.Close()
 
+	fi, err := f.Stat()
+
+	if err != nil {
+		log.Fatal("erorr while stat file", err)
+	}
+
+	// var metadata tus.Metadata
+	metadata := map[string]string{
+		"filename": fi.Name(),
+		"name":     fi.Name(),
+		"video_id": strconv.Itoa(videoID),
+	}
+
+	fingerprint := fmt.Sprintf("%s-%d-%s", fi.Name(), fi.Size(), fi.ModTime())
+
 	headers := make(http.Header)
 	headers.Add("X-Auth-Email", cc.Email)
 	headers.Add("X-Auth-Key", cc.APIKey)
 
 	config := &tus.Config{
-		ChunkSize:           5 * 1024 * 1024, // Cloudflare Stream requires a minimum chunk size of 5MB.
+		ChunkSize:           10 * 1024 * 1024, // Cloudflare Stream requires a minimum chunk size of 5MB.
 		Resume:              false,
 		OverridePatchMethod: false,
 		Store:               nil,
@@ -56,7 +75,7 @@ func main() {
 
 	client, _ := tus.NewClient("https://api.cloudflare.com/client/v4/accounts/"+cc.AccountID+"/media", config)
 
-	upload, _ := tus.NewUploadFromFile(f)
+	upload := tus.NewUpload(f, fi.Size(), metadata, fingerprint)
 
 	uploader, _ := client.CreateUpload(upload)
 
