@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/BurntSushi/toml"
 	tus "github.com/eventials/go-tus"
@@ -52,9 +51,9 @@ func main() {
 
 	// var metadata tus.Metadata
 	metadata := map[string]string{
-		"filename": fi.Name(),
-		"name":     fi.Name(),
-		"video_id": strconv.Itoa(videoID),
+		"filename": fmt.Sprintf("%d.mp4", videoID),
+		"name":     fmt.Sprintf("%d.mp4", videoID),
+		"video_id": fmt.Sprintf("%d", videoID),
 	}
 
 	fingerprint := fmt.Sprintf("%s-%d-%s", fi.Name(), fi.Size(), fi.ModTime())
