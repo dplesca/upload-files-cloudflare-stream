@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	tus "github.com/eventials/go-tus"
@@ -82,5 +83,10 @@ func main() {
 	if err != nil {
 		log.Fatal("Upload finished with error:", err)
 	}
-	log.Println("upload done for file", videoFile)
+	log.Println("upload done for file", videoFile, uploadIDFromURL(uploader.Url()))
+}
+
+func uploadIDFromURL(url string) string {
+	parts := strings.Split(url, "/")
+	return parts[len(parts)-1]
 }
