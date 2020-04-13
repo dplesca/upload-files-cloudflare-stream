@@ -80,7 +80,10 @@ func main() {
 
 	upload := tus.NewUpload(f, fi.Size(), metadata, fingerprint)
 
-	uploader, _ := client.CreateUpload(upload)
+	uploader, err := client.CreateUpload(upload)
+	if err != nil {
+		log.Fatal("uploader creation error: ", err)
+	}
 
 	err = uploader.Upload()
 	if err != nil {
