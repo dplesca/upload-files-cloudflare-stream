@@ -64,7 +64,7 @@ func main() {
 	headers.Add("X-Auth-Key", cc.APIKey)
 
 	config := &tus.Config{
-		ChunkSize:           10 * 1024 * 1024, // Cloudflare Stream requires a minimum chunk size of 5MB.
+		ChunkSize:           5 * 1024 * 1024, // Cloudflare Stream requires a minimum chunk size of 5MB.
 		Resume:              false,
 		OverridePatchMethod: false,
 		Store:               nil,
@@ -72,6 +72,7 @@ func main() {
 	}
 
 	log.Println("start upload for file", videoFile)
+	log.Println("upload information:", fingerprint, metadata)
 
 	client, _ := tus.NewClient("https://api.cloudflare.com/client/v4/accounts/"+cc.AccountID+"/media", config)
 
