@@ -25,10 +25,12 @@ func main() {
 	var cc CloudflareConfig
 	var configFilename, videoFile string
 	var videoID int
+	var chunkSize int64
 
 	flag.StringVar(&configFilename, "config", "./config.toml", "path for config file")
 	flag.StringVar(&videoFile, "video", "./videofile.mp4", "path for video file")
 	flag.IntVar(&videoID, "id", 0, "ivm video id for metadata store")
+	flag.Int64Var(&chunkSize, "chunksize", 5, "ivm video id for metadata store")
 	flag.Parse()
 
 	if _, err := toml.DecodeFile(configFilename, &cc); err != nil {
@@ -64,7 +66,7 @@ func main() {
 	headers.Add("X-Auth-Key", cc.APIKey)
 
 	config := &tus.Config{
-		ChunkSize:           5 * 1024 * 1024, // Cloudflare Stream requires a minimum chunk size of 5MB.
+		ChunkSize:           chunkSize * 1024 * 1024, // Cloudflare Stream requires a minimum chunk size of 5MB.
 		Resume:              false,
 		OverridePatchMethod: false,
 		Store:               nil,
