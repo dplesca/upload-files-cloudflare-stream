@@ -87,7 +87,7 @@ func main() {
 
 	err = uploader.Upload()
 	if err != nil {
-		log.Fatal("Upload finished with error:", err)
+		log.Fatal("upload finished with error:", err)
 	}
 	log.Println("upload done for file", videoFile, uploadIDFromURL(uploader.Url()))
 }
