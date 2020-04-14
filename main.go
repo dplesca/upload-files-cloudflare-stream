@@ -30,7 +30,7 @@ func main() {
 	flag.StringVar(&configFilename, "config", "./config.toml", "path for config file")
 	flag.StringVar(&videoFile, "video", "./videofile.mp4", "path for video file")
 	flag.IntVar(&videoID, "id", 0, "ivm video id for metadata store")
-	flag.Int64Var(&chunkSize, "chunksize", 5, "ivm video id for metadata store")
+	flag.Int64Var(&chunkSize, "chunksize", 5, "chunk size for upload")
 	flag.Parse()
 
 	if _, err := toml.DecodeFile(configFilename, &cc); err != nil {
